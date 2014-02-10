@@ -15,13 +15,6 @@ function draw() {
 	
 	clearCTX();
 	
-	ctx.fillStyle = "rgb(255,255,255)";
-	ctx.strokeStyle = "rgb(23,44,233)";
-	ctx.fillRect(42,42,23,23);
-	ctx.fillRect(123,124,23,23);
-
-	ctx.stroke();
-	ctx.fill();
 	
 	var iFPS = parseInt(fps);
 	$("#middle").html(""+iFPS);
