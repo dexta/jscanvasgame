@@ -1,7 +1,7 @@
 var keys = {up:false,down:false,mouseButton:[false,false,false]};
 var pointer=[0,0,0,0,0,0];
 
-
+var tick=0;
 //var tick=0; var drawLOCK = false;
 var fps = 0, now, lastUpdate = (new Date)*1 - 1;
 var fpsFilter = 50;
@@ -67,7 +67,9 @@ function keyEvent(e,which) {
 		if(kc == KM[k]) keys[k] = weDo;
 		}
 	
-	//if(weDo) console.log("key code send "+kc);
+	if(kc==80 && !weDo) playSwitch();
+	if(kc==82 && !weDo) init();
+	//console.log("keycode "+kc);
 	}
 // **end handle key press events **	
 	
