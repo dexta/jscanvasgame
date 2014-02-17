@@ -5,7 +5,6 @@ canObj = function(ctx,X,Y) {
 	this.Y = Y;
 	this.canvas = ctx;
 	}
-//canObj.prototype.toggleClick = function(){ this.onClick = (this.onClick) ? false : true; }
 
 columns = function(ctx,X,Y) {
 	this.constructor(ctx,X,Y);
@@ -18,29 +17,30 @@ columns = function(ctx,X,Y) {
 	this.colObj = [1,2,3,4,5,4,3,2,3,4,3,2];
 	this.colOn = 42;
 	this.stop = false;
+	this.score = 0;
+	this.scoreContact = false;
 
 	this.collision = function(x,y,xw,yh) {
 		var tx = (this.X<0)? x+(this.X*-1) : x-this.X;
 		var hx = ((tx)%this.dist);
 		this.colOn = -1;
 		if(hx>0 && hx<this.Width+(xw*1.1)) {
-			this.colOn = parseInt(tx/this.dist);
+				this.colOn = parseInt(tx/this.dist);
+				this.scoreContact = true;
+			} else {
+				if(this.scoreContact) { this.score++; this.scoreContact = false;}
+				return false;
 			}
-
-		$("#right").html("o:"+hx+"|d:"+this.dist+"|cN:"+this.colOn);
-		if(this.colOn == -1) return false;
+		//$("#right").html("o:"+hx+"|d:"+this.dist+"|cN:"+this.colOn);
+		//if(this.colOn == -1) return false;
 		var cArt = this.colObj[this.colOn];
-		var mFac = (this.X<0)? (this.X*-1) : this.X;
+		var mFac = (this.X<0)? this.X : this.X;
 		var reCor = [];
-		var sX = this.X+(this.dist*this.colOn)+mFac;
-		reCor.push([[sX,0],[sX+this.Width,this.heiFac*cArt]]);
-		reCor.push([[sX,this.heiFac*(cArt+this.colSpace)],[sX+this.Width,this.Height]]);
-		reCor.push({CArt:cArt,MFac:mFac,SX:sX});
-		//reCor.push([[this.X+(this.dist*this.colOn)+mFac,0],[this.Width+mFac,this.heiFac*cArt]]);
-		//reCor.push([[this.dist*this.colOn)+mFac,this.heiFac*(cArt+this.colSpace)],[this.Width,this.Height]]);
+		var sX = (this.dist*this.colOn)+mFac;
+		reCor.push({X1:sX,Y1:0,X2:(sX+this.Width),Y2:(this.heiFac*cArt)});
+		reCor.push({X1:sX,Y1:(this.heiFac*(cArt+this.colSpace)),X2:(sX+this.Width),Y2:this.Height});
+
 		return reCor;
-		// return true;
-		// return false;
 		}
 	this.move = function(px,py,vx,vy) {
 		this.X += vx;
@@ -56,9 +56,6 @@ columns = function(ctx,X,Y) {
 			this.canvas.fillRect(this.X+(this.dist*c),this.heiFac*(this.colObj[c]+this.colSpace),this.Width,this.Height);
 			if(this.colOn==c) this.canvas.fillStyle = "rgb(0,0,155)";
 		}
-
-		//this.canvas.fillRect(this.X+150,0,this.Width,this.heiFac*2);
-		//this.canvas.fillRect(this.X+150,this.heiFac*6,this.Width,this.Height);
 		this.canvas.stroke();
 		this.canvas.fill();
 		if(this.stop) return;
@@ -79,8 +76,6 @@ columns = function(ctx,X,Y) {
 columns.prototype = new canObj();
 
 
-
-
 playerBox = function(ctx,X,Y) {
 	this.constructor(ctx,X,Y);
 	this.Width = 42;
@@ -92,6 +87,7 @@ playerBox = function(ctx,X,Y) {
 	this.tapLock = false;
 	this.speedX = 4;
 	this.slowDown = true;
+	this.stop = false;
 
 	this.draw = function() {
 		this.canvas.save();
@@ -123,20 +119,20 @@ playerBox = function(ctx,X,Y) {
 			this.slowDown = false;
 		}
 		if(!this.slowDown) this.Y += 2;
+		if(this.stop) this.Y += 5;
 		$("#left").html("U:"+this.anUp+"|D:"+this.anDown+"|A:"+this.angle);
 		//this.X += this.speedX;
 	}
 	this.collision = function(listPoint) { 
-		var rz = Math.pow(this.radius,2);
-		var cr = [this.X+(this.Width/2),this.Y+(this.Height/2)];
-		for(var l=0,ll=listPoint.length;l<ll;l++) {
-			var tc = (Math.pow((listPoint[l][0]-cr[0]),2))+(Math.pow((listPoint[l][1]-cr[1]),2));
-			if(rz>=tc) return true;
+		var rY = this.Y-(this.Width/2); 
+		if(listPoint[0].Y2>(rY-this.radius) || listPoint[1].Y1<(rY+this.radius)) {
+			return true;
 		}
 		return false;
 		}
 	
 	this.keys = function(keys) {
+		if(this.stop) return;
 		if(keys.up && this.tapLock == false) { 
 			this.anDown = 0;
 			this.angle = 0;
@@ -145,8 +141,7 @@ playerBox = function(ctx,X,Y) {
 			this.slowDown = true;
 		}
 		if(keys.up==false) this.tapLock = false;
-
 	}
 
-	}
+}
 playerBox.prototype = new canObj();
