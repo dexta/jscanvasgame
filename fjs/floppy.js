@@ -12,7 +12,7 @@ columns = function(ctx,X,Y) {
 	this.Height = Y;
 	this.heiFac = this.Height/10;
 	this.dist = 300+this.Width;
-	this.speed = 4;
+	this.speed = 5;
 	this.colSpace = 4;
 	this.colObj = [1,2,3,4,5,4,3,2,3,4,3,2];
 	this.colOn = 42;
@@ -85,9 +85,12 @@ playerBox = function(ctx,X,Y) {
 	this.anDown = 50;
 	this.anUp = 0;
 	this.tapLock = false;
-	this.speedX = 4;
+	this.speedX = 8;
 	this.slowDown = true;
 	this.stop = false;
+	this.nsY = 5;
+	this.msY = 7;
+	this.hsY = 10;
 
 	this.draw = function() {
 		this.canvas.save();
@@ -104,22 +107,22 @@ playerBox = function(ctx,X,Y) {
 		this.canvas.restore();
 
 		if(this.anDown==0 && this.anUp>0) {
-			this.Y -= 1+(this.anUp/50);
-			this.anUp -= 1;
-			this.angle -= (this.angle>-50)? 1 : 0;
+			this.Y -= this.nsY+(this.anUp/50);
+			this.anUp -= 3;
+			this.angle -= (this.angle>-50)? 4 : 0;
 		}
 		if(this.anUp==0 && this.anDown>0) {
-			this.Y += 1;
-			this.anDown -= 1;
-			this.angle += (this.angle<50)? 2 : 0;
+			this.Y += this.nsY;
+			this.anDown -= 3;
+			this.angle += (this.angle<50)? 6 : 0;
 		}
 		if(this.anUp<=0 && this.slowDown) {
 			this.anDown = 50;
 			//this.angle = 0;
 			this.slowDown = false;
 		}
-		if(!this.slowDown) this.Y += 2;
-		if(this.stop) this.Y += 5;
+		if(!this.slowDown) this.Y += this.msY;
+		if(this.stop) this.Y += this.hsY;
 		$("#left").html("U:"+this.anUp+"|D:"+this.anDown+"|A:"+this.angle);
 		//this.X += this.speedX;
 	}
